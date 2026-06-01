@@ -1,0 +1,322 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  :root {
+    --background: 240 14% 6%;
+    --foreground: 220 14% 92%;
+    --card: 240 12% 9%;
+    --card-foreground: 220 14% 92%;
+    --popover: 240 12% 9%;
+    --popover-foreground: 220 14% 92%;
+    --primary: 263 80% 64%;
+    --primary-foreground: 220 14% 98%;
+    --secondary: 240 8% 14%;
+    --secondary-foreground: 220 14% 88%;
+    --muted: 240 8% 12%;
+    --muted-foreground: 220 8% 60%;
+    --accent: 240 10% 16%;
+    --accent-foreground: 220 14% 92%;
+    --destructive: 0 78% 58%;
+    --destructive-foreground: 220 14% 98%;
+    --border: 240 8% 18%;
+    --input: 240 8% 18%;
+    --ring: 263 80% 64%;
+    --radius: 0.5rem;
+
+    --success: 152 64% 48%;
+    --warning: 38 92% 58%;
+    --info: 199 89% 60%;
+    --running: 263 80% 70%;
+
+    --surface-1: 240 12% 8%;
+    --surface-2: 240 10% 11%;
+    --surface-3: 240 10% 14%;
+  }
+
+  .dark {
+    color-scheme: dark;
+  }
+
+  * {
+    @apply border-border;
+  }
+
+  html,
+  body,
+  #root {
+    height: 100%;
+  }
+
+  body {
+    @apply bg-background text-foreground antialiased;
+    font-family: "Inter", -apple-system, BlinkMacSystemFont, "Segoe UI", "Helvetica Neue", sans-serif;
+    font-feature-settings: "cv02", "cv03", "cv04", "cv11", "ss01";
+  }
+
+  code,
+  pre,
+  .font-mono {
+    font-family: "JetBrains Mono", ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+    font-feature-settings: "calt", "ss01";
+  }
+
+  ::selection {
+    background-color: hsl(var(--primary) / 0.35);
+  }
+
+  /* Scrollbar — slim, dark, Datadog-ish */
+  ::-webkit-scrollbar {
+    width: 10px;
+    height: 10px;
+  }
+  ::-webkit-scrollbar-track {
+    background: transparent;
+  }
+  ::-webkit-scrollbar-thumb {
+    background: hsl(var(--border));
+    border-radius: 999px;
+    border: 2px solid hsl(var(--background));
+  }
+  ::-webkit-scrollbar-thumb:hover {
+    background: hsl(var(--accent));
+  }
+}
+
+@layer components {
+  .grid-bg {
+    background-image: radial-gradient(hsl(var(--border) / 0.6) 1px, transparent 1px);
+    background-size: 24px 24px;
+  }
+
+  .hairline {
+    box-shadow: inset 0 0 0 1px hsl(var(--border));
+  }
+
+  .live-dot {
+    box-shadow: 0 0 0 0 hsl(var(--success) / 0.6);
+    animation: live-pulse 1.6s ease-out infinite;
+  }
+
+  @keyframes live-pulse {
+    0% {
+      box-shadow: 0 0 0 0 hsl(var(--success) / 0.55);
+    }
+    70% {
+      box-shadow: 0 0 0 8px hsl(var(--success) / 0);
+    }
+    100% {
+      box-shadow: 0 0 0 0 hsl(var(--success) / 0);
+    }
+  }
+
+  .shimmer {
+    background: linear-gradient(
+      90deg,
+      hsl(var(--muted)) 0%,
+      hsl(var(--accent)) 50%,
+      hsl(var(--muted)) 100%
+    );
+    background-size: 200% 100%;
+    animation: shimmer 1.6s linear infinite;
+  }
+
+  @keyframes shimmer {
+    0% {
+      background-position: 200% 0;
+    }
+    100% {
+      background-position: -200% 0;
+    }
+  }
+
+  /* ──────────── 3D stage ──────────── */
+  .stage-3d {
+    perspective: 2200px;
+    perspective-origin: 50% 12%;
+  }
+
+  /* Flat by default — tilt only when the user hovers, for a peek-3D effect.
+     This keeps the topology fully readable. */
+  .tilt-3d {
+    transform-style: preserve-3d;
+    transform: rotateX(0deg);
+    transition: transform 700ms cubic-bezier(0.16, 1, 0.3, 1);
+    will-change: transform;
+  }
+
+  .tilt-3d:hover,
+  .tilt-3d:focus-within {
+    transform: rotateX(8deg);
+  }
+
+  .float {
+    animation: float 6s ease-in-out infinite;
+  }
+
+  @keyframes float {
+    0%, 100% { transform: translateY(0); }
+    50% { transform: translateY(-4px); }
+  }
+
+  /* ──────────── constellation orbit ──────────── */
+  .orbit-stage {
+    perspective: 1400px;
+    perspective-origin: 50% 50%;
+    transform-style: preserve-3d;
+  }
+
+  .orbit-spin {
+    transform-style: preserve-3d;
+    animation: spin-y 22s linear infinite;
+  }
+
+  .orbit-spin:hover {
+    animation-play-state: paused;
+  }
+
+  .orbit-stage:hover .orbit-spin {
+    animation-play-state: paused;
+  }
+
+  @keyframes spin-y {
+    from { transform: rotateY(0deg) rotateX(20deg); }
+    to   { transform: rotateY(360deg) rotateX(20deg); }
+  }
+
+  .orbit-node {
+    backface-visibility: hidden;
+    will-change: transform, opacity;
+  }
+
+  .core-pulse {
+    box-shadow:
+      0 0 24px hsl(var(--primary) / 0.55),
+      0 0 60px hsl(var(--primary) / 0.35),
+      inset 0 0 18px hsl(var(--info) / 0.5);
+    animation: core-pulse 3.4s ease-in-out infinite;
+  }
+
+  @keyframes core-pulse {
+    0%, 100% {
+      box-shadow:
+        0 0 22px hsl(var(--primary) / 0.45),
+        0 0 50px hsl(var(--primary) / 0.25),
+        inset 0 0 16px hsl(var(--info) / 0.5);
+    }
+    50% {
+      box-shadow:
+        0 0 38px hsl(var(--primary) / 0.7),
+        0 0 80px hsl(var(--primary) / 0.45),
+        inset 0 0 22px hsl(var(--info) / 0.7);
+    }
+  }
+
+  /* ──────────── scan grid background ──────────── */
+  .scan-bg {
+    background:
+      radial-gradient(ellipse at 50% 0%, hsl(263 60% 14% / 0.55) 0%, transparent 60%),
+      radial-gradient(ellipse at 80% 30%, hsl(199 60% 14% / 0.4) 0%, transparent 50%),
+      linear-gradient(180deg, hsl(240 14% 5%) 0%, hsl(240 14% 4%) 100%);
+    position: relative;
+    overflow: hidden;
+  }
+
+  .scan-bg::before {
+    content: "";
+    position: absolute;
+    inset: 0;
+    background-image:
+      linear-gradient(hsl(var(--border) / 0.25) 1px, transparent 1px),
+      linear-gradient(90deg, hsl(var(--border) / 0.25) 1px, transparent 1px);
+    background-size: 56px 56px;
+    mask-image: radial-gradient(ellipse at 50% 30%, black 0%, transparent 70%);
+    pointer-events: none;
+  }
+
+  .scan-bg::after {
+    content: "";
+    position: absolute;
+    inset: 0;
+    background: repeating-linear-gradient(
+      180deg,
+      transparent 0,
+      transparent 3px,
+      hsl(var(--border) / 0.06) 3px,
+      hsl(var(--border) / 0.06) 4px
+    );
+    pointer-events: none;
+    mix-blend-mode: overlay;
+  }
+
+  /* ──────────── glass card ──────────── */
+  .glass {
+    background: linear-gradient(
+      135deg,
+      hsl(240 14% 10% / 0.7) 0%,
+      hsl(240 12% 7% / 0.65) 100%
+    );
+    backdrop-filter: blur(12px);
+    border: 1px solid hsl(var(--border));
+    box-shadow:
+      inset 0 1px 0 hsl(220 14% 96% / 0.04),
+      0 18px 40px -20px hsl(240 14% 0% / 0.7);
+  }
+
+  .glow-edge {
+    position: relative;
+  }
+
+  .glow-edge::before {
+    content: "";
+    position: absolute;
+    inset: -1px;
+    border-radius: inherit;
+    padding: 1px;
+    background: linear-gradient(135deg, hsl(263 80% 64% / 0.6), hsl(199 89% 60% / 0.4), transparent 60%);
+    -webkit-mask:
+      linear-gradient(#000 0 0) content-box,
+      linear-gradient(#000 0 0);
+    -webkit-mask-composite: xor;
+    mask-composite: exclude;
+    pointer-events: none;
+  }
+
+  /* ──────────── scroll reveal ──────────── */
+  .reveal {
+    opacity: 0;
+    transform: translateY(16px);
+    transition: opacity 700ms cubic-bezier(0.16, 1, 0.3, 1),
+      transform 700ms cubic-bezier(0.16, 1, 0.3, 1);
+  }
+
+  .reveal.in {
+    opacity: 1;
+    transform: translateY(0);
+  }
+
+  /* ──────────── drift particles ──────────── */
+  .drift {
+    position: absolute;
+    inset: 0;
+    pointer-events: none;
+    overflow: hidden;
+  }
+
+  .drift span {
+    position: absolute;
+    width: 2px;
+    height: 2px;
+    border-radius: 999px;
+    background: hsl(263 80% 78% / 0.5);
+    box-shadow: 0 0 8px hsl(263 80% 64% / 0.8);
+    animation: drift-up linear infinite;
+  }
+
+  @keyframes drift-up {
+    0% { transform: translateY(0) scale(0.6); opacity: 0; }
+    20% { opacity: 1; }
+    100% { transform: translateY(-220px) scale(1); opacity: 0; }
+  }
+}

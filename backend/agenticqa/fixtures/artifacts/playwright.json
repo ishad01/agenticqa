@@ -1,0 +1,20 @@
+{
+  "test_files": [
+    {
+      "path": "tests/e2e/auth/login.spec.ts",
+      "language": "typescript",
+      "content": "import { expect, test } from '@playwright/test';\nimport { LoginPage } from '../pages/login.page';\nimport { resetRateLimiter, seedUser } from '../fixtures/auth';\n\ntest.describe('Login with email and password', () => {\n  let login: LoginPage;\n\n  test.beforeEach(async ({ page }) => {\n    await resetRateLimiter(page);\n    await seedUser(page, { email: 'casey@example.com', password: 'correct horse battery' });\n    login = new LoginPage(page);\n    await login.goto();\n  });\n\n  test('happy path redirects to /dashboard within 2s @p1', async ({ page }) => {\n    const start = Date.now();\n    await login.submit('casey@example.com', 'correct horse battery');\n    await expect(page).toHaveURL(/\\/dashboard/);\n    expect(Date.now() - start).toBeLessThan(2000);\n    const cookies = await page.context().cookies();\n    const session = cookies.find((c) => c.name === '__Host-session');\n    expect(session?.httpOnly).toBe(true);\n  });\n\n  test('wrong password shows generic error and clears password field @p1', async () => {\n    await login.submit('casey@example.com', 'hunter2');\n    await expect(login.error).toHaveText('Email or password is incorrect');\n    await expect(login.email).toHaveValue('casey@example.com');\n    await expect(login.password).toHaveValue('');\n  });\n\n  test('unknown email shows the same generic error @security', async () => {\n    await login.submit('ghost@nowhere.example', 'whatever');\n    await expect(login.error).toHaveText('Email or password is incorrect');\n  });\n\n  test('empty fields are caught client-side', async ({ page }) => {\n    await login.submitForm();\n    await expect(login.emailError).toHaveText('Email is required');\n    await expect(login.passwordError).toHaveText('Password is required');\n    // form did not POST\n    expect(page.url()).toContain('/login');\n  });\n});\n"
+    },
+    {
+      "path": "tests/e2e/auth/lockout.spec.ts",
+      "language": "typescript",
+      "content": "import { expect, test } from '@playwright/test';\nimport { LoginPage } from '../pages/login.page';\nimport { resetRateLimiter, seedUser } from '../fixtures/auth';\n\ntest('five failed attempts locks the account and shows reset-password link @rate-limit', async ({ page }) => {\n  await resetRateLimiter(page);\n  await seedUser(page, { email: 'casey@example.com', password: 'correct horse battery' });\n  const login = new LoginPage(page);\n  await login.goto();\n  for (let i = 0; i < 5; i++) {\n    await login.submit('casey@example.com', `wrong-${i}`);\n  }\n  await expect(login.error).toHaveText('Account temporarily locked');\n  await expect(login.resetPasswordLink).toBeVisible();\n});\n"
+    },
+    {
+      "path": "tests/e2e/auth/session.spec.ts",
+      "language": "typescript",
+      "content": "import { expect, test } from '@playwright/test';\nimport { signInAs } from '../fixtures/auth';\n\ntest('session persists across a hard reload @p1', async ({ page }) => {\n  await signInAs(page, 'casey@example.com', 'correct horse battery');\n  await expect(page).toHaveURL(/\\/dashboard/);\n  await page.reload({ waitUntil: 'load' });\n  await expect(page).toHaveURL(/\\/dashboard/);\n  await expect(page.getByTestId('header-user')).toContainText('casey@example.com');\n});\n"
+    }
+  ],
+  "notes": "Reuses existing LoginPage page-object and resetRateLimiter / seedUser fixtures. Tags align with the team tag policy: @p1 for blockers, @security for enumeration checks, @rate-limit for the lockout flow."
+}

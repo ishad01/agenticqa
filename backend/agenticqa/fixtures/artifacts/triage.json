@@ -1,0 +1,15 @@
+{
+  "severity": "high",
+  "suggested_priority": "P1",
+  "title": "Lockout banner does not appear after the 5th failed login attempt",
+  "summary_markdown": "The lockout flow in `src/middleware/rate-limit.ts` correctly counts to 5 but the response payload omits the `locked: true` flag the front-end checks. As a result the inline error stays on the generic \"Email or password is incorrect\" string instead of switching to \"Account temporarily locked\", and the `Reset password` link never appears.\n\nUser impact: locked-out users have no path to recovery without reading docs; support load spikes after rotation events.\n\nThe other two failures in the suite (`session persists across a hard reload`, `wrong password clears password field`) are passing — only the lockout flow regressed.",
+  "reproduction_steps": [
+    "Reset the rate limiter and seed a user (`casey@example.com` / `correct horse battery`).",
+    "Open `/login`.",
+    "Submit the form with the wrong password five times in under 15 minutes.",
+    "Observe the inline error after the 5th submission."
+  ],
+  "expected": "After the 5th failed attempt the inline error reads 'Account temporarily locked' and a 'Reset password' link is rendered.",
+  "actual": "The generic 'Email or password is incorrect' error is shown; the 'Reset password' link is absent.",
+  "related_jira": "{{TICKET_KEY}}"
+}

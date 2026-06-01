@@ -1,0 +1,77 @@
+{
+  "feature": "Login with email and password",
+  "description": "Users can authenticate against the platform with email + password from the marketing header or the deep-linked /login route. Session persists via HttpOnly cookie. Account locks after 5 failed attempts in 15 minutes.",
+  "background": [
+    {"keyword": "Given", "text": "the rate limiter is reset"},
+    {"keyword": "And",   "text": "a registered user exists with email \"casey@example.com\" and password \"correct horse battery\""}
+  ],
+  "scenarios": [
+    {
+      "name": "Successful login redirects to dashboard within 2 seconds",
+      "tags": ["@auth", "@login", "@happy-path", "@p1"],
+      "steps": [
+        {"keyword": "Given", "text": "I open the marketing home page"},
+        {"keyword": "When",  "text": "I click \"Sign in\" in the header"},
+        {"keyword": "And",   "text": "I enter \"casey@example.com\" and \"correct horse battery\""},
+        {"keyword": "And",   "text": "I submit the login form"},
+        {"keyword": "Then",  "text": "I am redirected to /dashboard within 2 seconds"},
+        {"keyword": "And",   "text": "an HttpOnly __Host-session cookie is set"}
+      ],
+      "notes": "Acceptance criterion 1."
+    },
+    {
+      "name": "Wrong password shows a generic error without leaking account existence",
+      "tags": ["@auth", "@login", "@negative", "@p1"],
+      "steps": [
+        {"keyword": "Given", "text": "I am on the /login page"},
+        {"keyword": "When",  "text": "I submit \"casey@example.com\" with the wrong password \"hunter2\""},
+        {"keyword": "Then",  "text": "the inline error reads \"Email or password is incorrect\""},
+        {"keyword": "And",   "text": "the password field is cleared and the email field is preserved"}
+      ],
+      "notes": "Acceptance criterion 2."
+    },
+    {
+      "name": "Unknown email shows the same generic error",
+      "tags": ["@auth", "@login", "@security", "@p1"],
+      "steps": [
+        {"keyword": "Given", "text": "I am on the /login page"},
+        {"keyword": "When",  "text": "I submit \"ghost@nowhere.example\" with any password"},
+        {"keyword": "Then",  "text": "the same generic error \"Email or password is incorrect\" is shown"},
+        {"keyword": "And",   "text": "no signal of account existence is leaked in the response or headers"}
+      ],
+      "notes": "Acceptance criterion 3 — prevents account-enumeration."
+    },
+    {
+      "name": "Five failed attempts in 15 minutes locks the account",
+      "tags": ["@auth", "@login", "@rate-limit", "@p1"],
+      "steps": [
+        {"keyword": "Given", "text": "I have made four consecutive failed login attempts"},
+        {"keyword": "When",  "text": "I submit a fifth failed attempt within 15 minutes"},
+        {"keyword": "Then",  "text": "the inline error reads \"Account temporarily locked\""},
+        {"keyword": "And",   "text": "a \"Reset password\" link is shown"}
+      ],
+      "notes": "Acceptance criterion 4."
+    },
+    {
+      "name": "Empty email or password is caught client-side",
+      "tags": ["@auth", "@login", "@validation"],
+      "steps": [
+        {"keyword": "Given", "text": "I am on the /login page"},
+        {"keyword": "When",  "text": "I submit the form with empty fields"},
+        {"keyword": "Then",  "text": "inline validation \"Email is required\" and \"Password is required\" appears"},
+        {"keyword": "And",   "text": "the form is not posted to the server"}
+      ],
+      "notes": "Acceptance criterion 5."
+    },
+    {
+      "name": "Authenticated session persists across a hard reload",
+      "tags": ["@auth", "@session", "@p1"],
+      "steps": [
+        {"keyword": "Given", "text": "I am signed in and on /dashboard"},
+        {"keyword": "When",  "text": "I hard-reload the page"},
+        {"keyword": "Then",  "text": "I remain on /dashboard with my user displayed in the header"}
+      ],
+      "notes": "Acceptance criterion 6."
+    }
+  ]
+}

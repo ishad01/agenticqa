@@ -1,0 +1,14 @@
+{
+  "key": "PROJ-124",
+  "title": "User can reset password via email link",
+  "type": "Story",
+  "status": "To Do",
+  "description": "As a user who forgot my password, I want to request a reset link to my registered email so that I can regain access. The link must be single-use and expire in 30 minutes.",
+  "acceptance_criteria": [
+    "Given a valid email, when the user submits the reset form, then a confirmation message is shown (regardless of whether the account exists).",
+    "Given a valid reset link, when the user opens it, then they see a 'Set new password' form.",
+    "Given an expired or used reset link, when the user opens it, then an error 'This reset link is no longer valid' is shown.",
+    "Given a new password meeting policy (>= 12 chars, 1 number, 1 symbol), when the user submits, then they are logged in and redirected to /dashboard."
+  ],
+  "labels": ["auth", "password-reset", "p2"]
+}

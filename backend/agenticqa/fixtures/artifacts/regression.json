@@ -1,0 +1,46 @@
+{
+  "strategy": "impact-graph",
+  "diff_summary": "Touches the login form, the rate-limit middleware, and the session cookie helper. Pulls in 7 tests across 3 spec files; skipping 142 unaffected tests.",
+  "touched_files": [
+    "src/auth/login.ts",
+    "src/auth/session.ts",
+    "src/components/LoginForm.tsx",
+    "src/middleware/rate-limit.ts"
+  ],
+  "selected": [
+    {
+      "spec": "tests/e2e/auth/login.spec.ts",
+      "case": "happy path redirects to /dashboard within 2s @p1",
+      "reason": "Touches src/auth/login.ts (entry point)."
+    },
+    {
+      "spec": "tests/e2e/auth/login.spec.ts",
+      "case": "wrong password shows generic error and clears password field @p1",
+      "reason": "Touches src/auth/login.ts + form validation."
+    },
+    {
+      "spec": "tests/e2e/auth/login.spec.ts",
+      "case": "unknown email shows the same generic error @security",
+      "reason": "Touches login path + enumeration guard."
+    },
+    {
+      "spec": "tests/e2e/auth/login.spec.ts",
+      "case": "empty fields are caught client-side",
+      "reason": "Touches src/components/LoginForm.tsx."
+    },
+    {
+      "spec": "tests/e2e/auth/lockout.spec.ts",
+      "case": "five failed attempts locks the account @rate-limit",
+      "reason": "Touches src/middleware/rate-limit.ts."
+    },
+    {
+      "spec": "tests/e2e/auth/session.spec.ts",
+      "case": "session persists across a hard reload @p1",
+      "reason": "Touches src/auth/session.ts (cookie helper)."
+    }
+  ],
+  "skipped_count": 142,
+  "total_count": 149,
+  "estimated_seconds": 38,
+  "notes": "Cut wall-clock from ~9 min (full suite) to ~38 s by skipping unrelated areas. Strategy auto-escalates to full suite if impact analysis yields > 25% of the corpus."
+}

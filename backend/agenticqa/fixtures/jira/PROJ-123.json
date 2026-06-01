@@ -1,0 +1,16 @@
+{
+  "key": "PROJ-123",
+  "title": "User can log in with email and password",
+  "type": "Story",
+  "status": "In Progress",
+  "description": "As a registered user, I want to log in with my email address and password so that I can access my dashboard and personalized features. Login must be available from the marketing site header (\"Sign in\") and from the deep-linked /login route. The session must persist across page reloads via an httpOnly cookie. MFA is out of scope for this story and is tracked separately under PROJ-456.",
+  "acceptance_criteria": [
+    "Given a valid registered email and password, when the user submits the login form, then they are redirected to /dashboard within 2 seconds.",
+    "Given an invalid password for a valid email, when the user submits, then an inline error 'Email or password is incorrect' is shown and the password field is cleared (email field preserved).",
+    "Given an unknown email, when the user submits, then the same generic inline error is shown (do not leak account existence).",
+    "Given a locked account (5+ failed attempts in 15 minutes), when the user submits, then an inline error 'Account temporarily locked' is shown with a 'Reset password' link.",
+    "Given an empty email or password field, when the user submits, then client-side validation messages appear and the form is not submitted.",
+    "Given a successful login, when the user reloads the page, then they remain authenticated."
+  ],
+  "labels": ["auth", "login", "p1"]
+}

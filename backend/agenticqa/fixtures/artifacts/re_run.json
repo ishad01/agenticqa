@@ -1,0 +1,12 @@
+{
+  "fix_commit": "9a4f3c1",
+  "fix_summary": "fix(auth): include locked:true on rate-limit response so the lockout banner renders",
+  "rerun_pipeline_id": "mock-rerun-44128",
+  "rerun_url": "https://gitlab.example.com/mock/-/pipelines/mock-rerun-44128",
+  "status": "success",
+  "summary": "Fix picked up automatically. DTS recomputed the impacted subset (6 cases) and the re-run was clean. Loop closed — ready to promote to staging.",
+  "selected_count": 6,
+  "passed": 6,
+  "failed": 0,
+  "estimated_seconds": 41
+}
